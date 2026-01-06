@@ -4,7 +4,7 @@ import { createServerClient } from '@/lib/supabase'
 import { Sparkles, ArrowRight, Award } from 'lucide-react'
 
 export const metadata = generatePageMetadata({
-  title: '15 AI Study Tools | inspir',
+  title: '15 AI Study Tools - Flashcards, Quiz Generator & More',
   description: 'Explore 15 AI-powered study tools including quiz generator, flashcards, study timer, math solver, and more. All in one platform.',
   keywords: ['study tools', 'AI tools', 'student tools', 'learning tools'],
   canonical: 'https://inspir.uk/tools',

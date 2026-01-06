@@ -5,14 +5,16 @@ import StructuredData from '@/components/seo/StructuredData'
 import {
   Sparkles, BookOpen, Brain, Clock, CheckCircle2,
   Users, TrendingUp, Award, ArrowRight, Star,
-  Zap, Target, Shield
+  Zap, Target, Shield, GraduationCap, Building2,
+  UserPlus, LogIn, Heart, Globe
 } from 'lucide-react'
 
 export const metadata = generatePageMetadata({
-  title: 'inspir - AI Study Platform | 14-Day Free Trial',
-  description: 'Revolutionary AI study platform with 15 tools. Get instant homework help, create quizzes, use flashcards, and more. Start your 14-day free trial today.',
-  keywords: ['AI tutor', 'study platform', 'homework help', 'online learning'],
+  title: 'inspir - AI Study Platform | Sponsor a Student Today',
+  description: 'Revolutionary AI study platform with 15 tools. £6.99/profile. Parents, schools and organizations can sponsor students. Start transforming education today.',
+  keywords: ['AI tutor', 'study platform', 'homework help', 'sponsor education', 'student sponsorship'],
   canonical: 'https://inspir.uk',
+  ogImage: '/images/mission-1.jpg',
 })
 
 const allTools = [
@@ -84,6 +86,37 @@ const testimonials = [
   },
 ]
 
+const sponsorshipOptions = [
+  {
+    icon: <Users className="w-10 h-10" />,
+    title: 'Parents',
+    description: 'Create profiles for each child',
+    example: '2 kids = £13.98/month',
+    color: 'from-purple-500 to-pink-500',
+  },
+  {
+    icon: <Building2 className="w-10 h-10" />,
+    title: 'Schools',
+    description: 'Sponsor entire classrooms',
+    example: 'Volume pricing available',
+    color: 'from-blue-500 to-cyan-500',
+  },
+  {
+    icon: <Globe className="w-10 h-10" />,
+    title: 'Organizations',
+    description: 'Support educational initiatives',
+    example: 'Custom packages',
+    color: 'from-green-500 to-teal-500',
+  },
+  {
+    icon: <Heart className="w-10 h-10" />,
+    title: 'Companies',
+    description: 'CSR & community impact',
+    example: 'Sponsor students in need',
+    color: 'from-amber-500 to-orange-500',
+  },
+]
+
 export default function Home() {
   return (
     <>
@@ -101,34 +134,84 @@ export default function Home() {
               </div>
 
               <h1 className="text-5xl sm:text-7xl font-black mb-6 text-gray-900 dark:text-white">
-                Study Smarter with
+                Transform Learning with
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">
-                  AI-Powered Tools
+                  AI-Powered Education
                 </span>
               </h1>
 
               <p className="text-xl sm:text-2xl text-gray-700 dark:text-gray-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Transform your learning with 15 intelligent study tools. Get instant homework help, create quizzes, use flashcards, and achieve your academic goals faster.
+                One simple price: £6.99 per profile. 15 intelligent study tools. Unlimited learning. Parents, schools, and organizations can sponsor student profiles.
               </p>
 
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
+              {/* Three Auth CTAs */}
+              <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto mb-8">
+                {/* Parent Signup */}
+                <Link
+                  href="/signup"
+                  className="group flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all hover:scale-105 border-2 border-purple-600 dark:border-purple-400"
+                >
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white">
+                    <UserPlus className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      Parent Signup
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Create profiles for your children
+                    </p>
+                  </div>
+                  <div className="text-sm font-semibold text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Get Started <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
+
+                {/* Parent Sign In */}
+                <Link
+                  href="/login"
+                  className="group flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all hover:scale-105 border-2 border-blue-600 dark:border-blue-400"
+                >
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white">
+                    <LogIn className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      Parent Sign In
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Manage your student profiles
+                    </p>
+                  </div>
+                  <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Sign In <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
+
+                {/* Student Login */}
                 <Link
                   href="/chat"
-                  className="group inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-lg text-lg hover:scale-105 transition-all shadow-lg"
+                  className="group flex flex-col items-center gap-3 p-6 bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all hover:scale-105 border-2 border-green-600 dark:border-green-400"
                 >
-                  Start 14-Day Free Trial
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  href="/tools"
-                  className="px-8 py-4 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-lg text-lg hover:scale-105 transition-transform shadow-lg border-2 border-purple-600 dark:border-purple-400"
-                >
-                  Explore All 15 Tools
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-teal-500 flex items-center justify-center text-white">
+                    <GraduationCap className="w-8 h-8" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      Student Login
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Start learning instantly
+                    </p>
+                  </div>
+                  <div className="text-sm font-semibold text-green-600 dark:text-green-400 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                    Start Learning <ArrowRight className="w-4 h-4" />
+                  </div>
                 </Link>
               </div>
 
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                ✓ No credit card required ✓ Cancel anytime ✓ All tools included
+                ✓ No credit card required ✓ Cancel anytime ✓ All 15 tools included
               </p>
             </div>
           </div>
@@ -160,8 +243,58 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Benefits Section */}
+        {/* Sponsorship Pricing Section */}
         <section className="py-20 bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl font-black mb-4 text-gray-900 dark:text-white">
+                Sponsor a Student's Future
+              </h2>
+              <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
+                £6.99 per profile. Unlimited learning. Parents, schools, organizations, and companies can sponsor student profiles to transform education.
+              </p>
+              <div className="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-gray-800 rounded-full shadow-lg border-2 border-purple-600 dark:border-purple-400">
+                <span className="text-5xl font-black text-gray-900 dark:text-white">£6.99</span>
+                <span className="text-lg text-gray-600 dark:text-gray-300">/profile/month</span>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {sponsorshipOptions.map((option, index) => (
+                <div
+                  key={index}
+                  className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg hover:shadow-2xl transition-all hover:scale-105 border-2 border-gray-200 dark:border-gray-700 text-center"
+                >
+                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${option.color} flex items-center justify-center text-white mx-auto mb-4`}>
+                    {option.icon}
+                  </div>
+                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                    {option.title}
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-300 mb-3">
+                    {option.description}
+                  </p>
+                  <p className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                    {option.example}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="text-center">
+              <Link
+                href="/pricing"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-lg text-lg hover:scale-105 transition-transform shadow-lg"
+              >
+                View Full Pricing Details
+                <ArrowRight className="w-5 h-5" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Benefits Section */}
+        <section className="py-20 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl sm:text-5xl font-black mb-4 text-gray-900 dark:text-white">
@@ -192,7 +325,7 @@ export default function Home() {
         </section>
 
         {/* All 15 Tools Grid */}
-        <section className="py-20 bg-white dark:bg-gray-900">
+        <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <div className="flex items-center justify-center gap-3 mb-4">
@@ -238,7 +371,7 @@ export default function Home() {
         </section>
 
         {/* Testimonials Section */}
-        <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-gray-800 dark:to-gray-900">
+        <section className="py-20 bg-white dark:bg-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl sm:text-5xl font-black mb-4 text-gray-900 dark:text-white">
@@ -278,7 +411,7 @@ export default function Home() {
         </section>
 
         {/* How It Works Section */}
-        <section className="py-20 bg-white dark:bg-gray-900">
+        <section className="py-20 bg-gradient-to-br from-gray-50 to-purple-50 dark:from-gray-800 dark:to-gray-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-4xl sm:text-5xl font-black mb-4 text-gray-900 dark:text-white">
@@ -290,20 +423,20 @@ export default function Home() {
               {[
                 {
                   step: '1',
-                  title: 'Sign Up Free',
-                  desc: 'Create your account in seconds. No credit card required.',
+                  title: 'Sign Up',
+                  desc: 'Parents create an account and add student profiles. £6.99 per profile.',
                   icon: <CheckCircle2 className="w-12 h-12 text-green-600 dark:text-green-400" />
                 },
                 {
                   step: '2',
-                  title: 'Choose Your Tools',
-                  desc: 'Access all 15 study tools instantly. Pick what you need.',
+                  title: 'Students Login',
+                  desc: 'Each student gets their own login with access to all 15 tools.',
                   icon: <BookOpen className="w-12 h-12 text-blue-600 dark:text-blue-400" />
                 },
                 {
                   step: '3',
                   title: 'Start Learning',
-                  desc: 'Get AI-powered help and watch your grades improve.',
+                  desc: 'Get unlimited AI-powered help and watch grades improve.',
                   icon: <TrendingUp className="w-12 h-12 text-purple-600 dark:text-purple-400" />
                 },
               ].map((item, index) => (
@@ -327,23 +460,35 @@ export default function Home() {
         </section>
 
         {/* Final CTA Section */}
-        <section className="py-24 bg-gradient-to-r from-purple-600 to-blue-600">
+        <section className="py-24 bg-gradient-to-r from-purple-600 via-blue-600 to-green-600">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-4xl sm:text-5xl font-black text-white mb-6">
-              Ready to Transform Your Study Habits?
+              Ready to Transform Education?
             </h2>
-            <p className="text-xl text-purple-100 mb-10 leading-relaxed">
-              Join thousands of students already using inspir to achieve their academic goals. Start your free trial today and experience the future of learning.
+            <p className="text-xl text-purple-100 mb-4 leading-relaxed">
+              £6.99 per profile. Everything unlimited. Sponsor a student's future today.
             </p>
-            <Link
-              href="/chat"
-              className="inline-flex items-center gap-2 px-10 py-5 bg-white text-purple-600 font-bold rounded-lg text-xl hover:scale-105 transition-transform shadow-2xl"
-            >
-              Start Your 14-Day Free Trial
-              <Sparkles className="w-6 h-6" />
-            </Link>
+            <p className="text-2xl font-bold text-white mb-10">
+              Parents, Schools, Organizations - Start Now
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link
+                href="/signup"
+                className="inline-flex items-center gap-2 px-10 py-5 bg-white text-purple-600 font-bold rounded-lg text-xl hover:scale-105 transition-transform shadow-2xl"
+              >
+                Parent Signup
+                <UserPlus className="w-6 h-6" />
+              </Link>
+              <Link
+                href="/chat"
+                className="inline-flex items-center gap-2 px-10 py-5 bg-purple-900 text-white font-bold rounded-lg text-xl hover:scale-105 transition-transform shadow-2xl border-2 border-white"
+              >
+                Student Login
+                <GraduationCap className="w-6 h-6" />
+              </Link>
+            </div>
             <p className="text-sm text-purple-100 mt-6">
-              No credit card required • All 15 tools included • Cancel anytime • 24/7 AI support
+              No credit card required • All 15 tools included • Cancel anytime • Unlimited learning
             </p>
           </div>
         </section>

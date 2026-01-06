@@ -7,9 +7,9 @@ export function generateOrganizationSchema() {
     logo: 'https://inspir.uk/assets/brand/logo.png',
     description: 'AI-powered study platform with 15 integrated tools for students',
     sameAs: [
-      'https://twitter.com/inspirAI',
-      'https://facebook.com/inspirAI',
-      'https://linkedin.com/company/inspir',
+      'https://twitter.com/inspiruk',
+      'https://facebook.com/inspir.uk',
+      'https://linkedin.com/company/inspiruk',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
@@ -105,7 +105,7 @@ export function generateProductSchema() {
     offers: {
       '@type': 'Offer',
       priceCurrency: 'GBP',
-      price: '9.99',
+      price: '6.99',
       priceValidUntil: '2025-12-31',
       availability: 'https://schema.org/InStock',
       url: 'https://inspir.uk/pricing',

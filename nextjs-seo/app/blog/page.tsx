@@ -5,7 +5,7 @@ import { BookOpen, Sparkles, TrendingUp } from 'lucide-react'
 import BlogCard from '@/components/BlogCard'
 
 export const metadata = generatePageMetadata({
-  title: 'Study Tips & AI Education Blog | inspir',
+  title: 'Study Tips & AI Education Blog',
   description: 'Expert study tips, exam preparation guides, and AI education insights. Learn how to study smarter with proven techniques and AI-powered tools.',
   keywords: ['study tips', 'exam preparation', 'learning strategies', 'AI education', 'student blog'],
   canonical: 'https://inspir.uk/blog',
@@ -24,12 +24,6 @@ export default async function BlogPage() {
     `)
     .eq('status', 'published')
     .order('published_at', { ascending: false })
-
-  // Get all categories for filtering
-  const { data: categories } = await supabase
-    .from('seo_blog_categories')
-    .select('*')
-    .order('name')
 
   // Get featured posts (top 3)
   const featuredPosts = posts?.slice(0, 3) || []
@@ -51,33 +45,6 @@ export default async function BlogPage() {
             <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
               Expert study tips, exam preparation guides, and insights on AI-powered learning. Everything you need to excel academically.
             </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Filter */}
-      <section className="sticky top-0 z-10 py-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link
-              href="/blog"
-              className="px-5 py-2 bg-purple-600 text-white font-semibold rounded-full hover:bg-purple-700 transition-colors shadow-md"
-            >
-              All Posts
-            </Link>
-            {categories?.map((category) => (
-              <Link
-                key={category.slug}
-                href={`/blog/category/${category.slug}`}
-                className="px-5 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                style={{
-                  backgroundColor: category.color ? `${category.color}20` : undefined,
-                  color: category.color || undefined
-                }}
-              >
-                {category.name}
-              </Link>
-            ))}
           </div>
         </div>
       </section>

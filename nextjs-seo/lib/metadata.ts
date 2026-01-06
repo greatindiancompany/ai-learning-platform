@@ -15,7 +15,7 @@ export function generatePageMetadata({
   title,
   description,
   keywords = [],
-  ogImage = '/assets/og-images/default-og.png',
+  ogImage = '/images/mission-1.jpg',
   canonical,
   noindex = false,
 }: PageMetadata): Metadata {
@@ -45,7 +45,7 @@ export function generatePageMetadata({
       title,
       description,
       images: [ogImage],
-      creator: '@inspirAI',
+      creator: '@inspiruk',
     },
 
     alternates: {
