@@ -2,5 +2,15 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.89.0",
     "pg": "^8.16.3"
+  },
+  "name": "ai-learning-platform",
+  "license": "MIT",
+  "description": "A React and Express AI study companion prototype with student tools, streaming chat, Supabase, and safety controls.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/greatindiancompany/ai-learning-platform.git"
+  },
+  "bugs": {
+    "url": "https://github.com/greatindiancompany/ai-learning-platform/issues"
   }
 }
