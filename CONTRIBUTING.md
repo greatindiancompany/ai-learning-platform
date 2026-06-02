@@ -1,57 +1,97 @@
-# Contributing to inspir AI Learning Platform
+# Contributing To inspir AI Learning Platform
 
-Thank you for wanting to help.
+Thanks for helping improve the inspir learning-platform prototype. This repo is a reference and experimentation space for AI tutoring, student workflows, parent controls, memory, SEO tooling, and operational setup.
 
-This project exists because useful software gets better when people can understand it, run it, question it, and improve it. Contributions are welcome from engineers, designers, educators, operators, writers, testers, and curious users.
+For the production 50-tool quiz-first app, contribute to [greatindiancompany/ai-study-platform](https://github.com/greatindiancompany/ai-study-platform).
 
-## How to Contribute
+## How To Contribute Here
 
-1. Open an issue for bugs, ideas, accessibility problems, documentation gaps, or confusing behavior.
-2. Keep pull requests focused and easy to review.
-3. Include screenshots or short recordings for UI changes.
-4. Include reproduction steps for bugs.
-5. Run the checks before asking for review.
+- Keep pull requests focused and easy to review.
+- Explain what changed, why it changed, and how it was tested.
+- Include screenshots or short recordings for UI changes.
+- Include schema and environment notes for backend or database changes.
+- Never commit secrets, production data, private user content, or local env files.
 
 ## Local Setup
 
+Backend:
+
 ```bash
-cd frontend && npm install
-cd ../backend && npm install
+cd backend
+cp .env.example .env
+npm install
+npm run dev
+```
+
+Frontend:
+
+```bash
+cd frontend
+cp .env.example .env
+npm install --legacy-peer-deps
+npm run dev
+```
+
+SEO site:
+
+```bash
+cd nextjs-seo
+cp .env.example .env.local
+npm install
 npm run dev
 ```
 
 ## Checks
 
+Run the checks related to your change:
+
 ```bash
-cd frontend && npm run build
+cd frontend
+npm run build
 ```
 
-## Pull Request Expectations
+```bash
+cd nextjs-seo
+npm run build
+```
 
-Please include:
+For backend work, start the API and confirm the health endpoint:
 
-- What changed.
-- Why it changed.
-- How it was tested.
-- Screenshots for visual changes.
-- Any migration, environment, deployment, or data notes.
+```bash
+cd backend
+npm start
+curl http://localhost:3000/health
+```
 
-## Areas That Need Care
+## Pull Request Checklist
 
-- Product clarity: make the experience easier to understand.
-- Accessibility: keyboard navigation, semantic markup, contrast, and screen reader support.
-- Reliability: tests, validation, error states, and deployment hygiene.
-- Security: keep secrets server-side and avoid logging private user data.
-- Documentation: help the next contributor build context quickly.
+Before asking for review, confirm:
 
-## Code Style
+- The relevant app starts locally.
+- The relevant build passes, or the failure is documented.
+- UI changes include screenshots or a recording.
+- API changes include request/response notes.
+- Database changes include migration and rollback notes.
+- New secrets or env variables are documented in the appropriate `.env.example`.
 
-- Prefer the patterns already used in the repository.
-- Keep changes scoped.
-- Avoid new dependencies unless they remove real complexity.
-- Add comments only where they explain non-obvious behavior.
-- Never commit real secrets, production data, provider keys, or private user content.
+## Good Contribution Areas
+
+- Make setup simpler and less fragile.
+- Modernize dependencies carefully.
+- Improve accessibility, empty states, and error states.
+- Add focused tests around auth, safety, and data access.
+- Consolidate migration files and document schema ownership.
+- Improve security around uploads, auth, CORS, logging, and provider keys.
+- Keep SEO and blog tooling understandable.
+
+## Style And Scope
+
+- Follow the patterns already in the relevant app.
+- Prefer small changes over broad rewrites.
+- Avoid new dependencies unless they clearly reduce complexity.
+- Keep provider credentials server-side.
+- Treat student content as private.
 
 ## Community
 
-Be generous with context. Assume people are here because they care about making the project better.
+Be clear, kind, and specific. Good reviews make the project easier to work on, not just more correct.
