@@ -12,7 +12,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
+const JWT_SECRET_PLACEHOLDER = 'your-super-secret-jwt-key-change-this-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || JWT_SECRET_PLACEHOLDER;
+
+if (process.env.NODE_ENV === 'production' && (!process.env.JWT_SECRET || process.env.JWT_SECRET === JWT_SECRET_PLACEHOLDER)) {
+    throw new Error('JWT_SECRET must be set to a unique value when NODE_ENV is production');
+}
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // ============================================================================

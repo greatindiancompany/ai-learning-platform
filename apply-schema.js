@@ -1,11 +1,18 @@
 import fs from 'fs';
 import https from 'https';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const SUPABASE_URL = 'https://ksdnbkxixbywurohugkx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before running this script.');
+  process.exit(1);
+}
 
 // Read the SQL schema file
-const sqlSchema = fs.readFileSync('/root/inspir/auth-schema.sql', 'utf8');
+const sqlSchema = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'auth-schema.sql'), 'utf8');
 
 // Function to execute SQL via Supabase REST API
 async function executeSQL(sql) {
