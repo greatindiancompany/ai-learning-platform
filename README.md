@@ -142,7 +142,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
 
 ## Security
 
-Do not commit provider keys, Supabase credentials, JWT secrets, OAuth credentials, payment secrets, email credentials, production logs, or user content. Report vulnerabilities privately. See [SECURITY.md](SECURITY.md).
+Do not commit provider keys, Supabase credentials, JWT secrets, OAuth credentials, payment secrets, email credentials, production logs, or user content. The service-role key for Supabase project `ksdnbkxixbywurohugkx` was committed in history and must be rotated by the founder. See [SECURITY.md](SECURITY.md).
 
 ## License
 

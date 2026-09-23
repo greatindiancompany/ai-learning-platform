@@ -34,6 +34,21 @@ If you are unsure whether something is security-sensitive, report it privately f
 - Avoid logging prompts, uploaded files, student messages, tokens, or personally identifying data.
 - Rotate any credential that may have been exposed.
 
+## Founder action: rotate the Supabase service-role key
+
+A Supabase **service-role** key for project `ksdnbkxixbywurohugkx` was committed in operational scripts. Removing it from the current tree does not revoke it. The key remains in git history, and anyone who cloned or forked the repository can still use the old value to bypass row-level security.
+
+The founder **must** rotate that service-role key in the Supabase dashboard for project `ksdnbkxixbywurohugkx` (Settings → API → service_role → regenerate). This repository does not contain a replacement key, and none should be invented or pasted into source files.
+
+After rotation:
+
+- Put the new key only in environment variables (`SUPABASE_SERVICE_ROLE_KEY`), or in an untracked `.env` file.
+- Set `SUPABASE_URL` the same way. Schema scripts that open Postgres directly read `DATABASE_URL` only.
+- If the Postgres password was ever set to that service-role JWT, rotate the database password as well.
+- Update deployed environments with the new values. Do not commit them.
+
+Scripts that previously embedded the key now exit immediately when those variables are unset.
+
 ## Supported Branch
 
 Security fixes target the current default branch unless maintainers announce a separate release policy.
