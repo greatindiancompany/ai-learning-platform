@@ -1,8 +1,12 @@
-import { createClient } from '@supabase/supabase-js';
-import fs from 'fs';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-const SUPABASE_URL = 'https://ksdnbkxixbywurohugkx.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY';
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) {
+  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before running this script.');
+  process.exit(1);
+}
+
+const { createClient } = await import('@supabase/supabase-js');
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, {
   db: { schema: 'public' },

@@ -1,22 +1,21 @@
-import pg from 'pg';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const { Client } = pg;
+const databaseUrl = process.env.DATABASE_URL;
 
-// Supabase connection details
-// Format: postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
-const PROJECT_REF = 'ksdnbkxixbywurohugkx';
+if (!databaseUrl) {
+  console.error('Set DATABASE_URL before running this script.');
+  process.exit(1);
+}
 
-// Try different connection approaches
-const connectionStrings = [
-  // Try with service role key as password (sometimes works)
-  `postgresql://postgres:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY@db.${PROJECT_REF}.supabase.co:5432/postgres`,
-  // Try pooler connection
-  `postgresql://postgres:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY@aws-0-eu-west-2.pooler.supabase.com:5432/postgres`
-];
+const pg = await import('pg');
+const Client = pg.Client || pg.default.Client;
+
+const connectionStrings = [databaseUrl];
 
 async function tryConnection(connectionString, index) {
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
+  const client = new Client({ connectionString, ssl: { rejectUnauthorized: true } });
 
   try {
     console.log(`\n🔌 Trying connection method ${index + 1}...`);
@@ -24,7 +23,7 @@ async function tryConnection(connectionString, index) {
     console.log('✅ Connected successfully!');
 
     // Read SQL schema
-    const sqlSchema = fs.readFileSync('/root/inspir/auth-schema.sql', 'utf8');
+    const sqlSchema = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'auth-schema.sql'), 'utf8');
     console.log(`📖 Loaded SQL schema (${sqlSchema.length} characters)`);
 
     // Execute the schema
@@ -69,14 +68,12 @@ async function main() {
   }
 
   console.log('\n❌ All connection methods failed.');
-  console.log('\n💡 You need the actual database password from Supabase Dashboard:');
-  console.log('   1. Go to https://supabase.com/dashboard/project/' + PROJECT_REF);
-  console.log('   2. Go to Settings → Database');
-  console.log('   3. Copy the "Connection string" under "Connection pooling"');
-  console.log('   4. The password is in the connection string');
+  console.log('\n💡 Set DATABASE_URL to the Postgres connection string from the Supabase dashboard.');
+  console.log('   Project ref: ksdnbkxixbywurohugkx');
+  console.log('   Settings → Database → Connection string');
   console.log('\n   OR use the SQL Editor in the Supabase Dashboard:');
   console.log('   1. Go to SQL Editor');
-  console.log('   2. Paste the contents of /root/inspir/auth-schema.sql');
+  console.log('   2. Paste the contents of auth-schema.sql');
   console.log('   3. Click "Run"');
 
   process.exit(1);
