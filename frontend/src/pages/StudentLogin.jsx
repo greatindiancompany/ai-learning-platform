@@ -166,20 +166,6 @@ export default function StudentLogin() {
                     </motion.button>
                 </form>
 
-                {/* Demo Accounts */}
-                <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.6, duration: 0.5 }}
-                    className="mt-6 p-4 bg-blue-50 rounded-xl border-2 border-blue-100"
-                >
-                    <p className="text-sm font-bold text-gray-800 mb-2">Demo Accounts:</p>
-                    <div className="space-y-1 text-xs text-gray-600">
-                        <p><span className="font-semibold text-purple-600">demo1</span> / password: <span className="font-mono">demo123</span></p>
-                        <p><span className="font-semibold text-blue-600">demo2</span> / password: <span className="font-mono">demo123</span></p>
-                        <p><span className="font-semibold text-green-600">demo3</span> / password: <span className="font-mono">demo123</span></p>
-                    </div>
-                </motion.div>
             </motion.div>
         </div>
     );

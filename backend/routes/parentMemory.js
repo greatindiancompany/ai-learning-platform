@@ -57,7 +57,7 @@ router.get('/students/:studentId/memory', authenticateParent, async (req, res) =
     console.error('Error getting student memory:', error);
     res.status(500).json({
       error: 'Failed to get student memory',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -107,7 +107,7 @@ router.delete('/students/:studentId/memory/:factId', authenticateParent, async (
     console.error('Error deleting memory fact:', error);
     res.status(500).json({
       error: 'Failed to delete memory fact',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -158,7 +158,7 @@ router.delete('/students/:studentId/memory', authenticateParent, async (req, res
     console.error('Error clearing memory:', error);
     res.status(500).json({
       error: 'Failed to clear memory',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -223,7 +223,7 @@ router.get('/students/:studentId/analytics', authenticateParent, async (req, res
     console.error('Error getting student analytics:', error);
     res.status(500).json({
       error: 'Failed to get student analytics',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });

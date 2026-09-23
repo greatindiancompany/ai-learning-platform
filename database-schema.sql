@@ -64,12 +64,9 @@ CREATE TRIGGER trigger_update_conversation_timestamp
     FOR EACH ROW
     EXECUTE FUNCTION update_conversation_timestamp();
 
--- Enable Row Level Security (but allow all for public access)
+-- Row Level Security is on, with no policies for anon or authenticated.
+-- The API uses the service role, which bypasses RLS, and checks ownership
+-- in application code. The anon key cannot read or write these tables.
 ALTER TABLE chat_conversations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_folders ENABLE ROW LEVEL SECURITY;
-
--- Create permissive policies for public access
-CREATE POLICY "Allow all operations on conversations" ON chat_conversations FOR ALL USING (true);
-CREATE POLICY "Allow all operations on messages" ON chat_messages FOR ALL USING (true);
-CREATE POLICY "Allow all operations on folders" ON chat_folders FOR ALL USING (true);

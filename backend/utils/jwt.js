@@ -12,7 +12,19 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // JWT Configuration
-const JWT_SECRET = process.env.JWT_SECRET || 'your-super-secret-jwt-key-change-this-in-production';
+const JWT_PLACEHOLDER = 'your-super-secret-jwt-key-change-this-in-production';
+const configuredJwtSecret = process.env.JWT_SECRET;
+const jwtSecretMissing = !configuredJwtSecret || configuredJwtSecret === JWT_PLACEHOLDER;
+
+if (process.env.NODE_ENV === 'production' && (jwtSecretMissing || configuredJwtSecret.length < 32)) {
+  throw new Error('JWT_SECRET must be set to a unique value of at least 32 characters in production');
+}
+
+if (jwtSecretMissing && process.env.NODE_ENV !== 'test') {
+  console.warn('JWT_SECRET is unset. Development is using a placeholder secret.');
+}
+
+const JWT_SECRET = jwtSecretMissing ? JWT_PLACEHOLDER : configuredJwtSecret;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '24h';
 
 // ============================================================================

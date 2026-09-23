@@ -1,121 +1,162 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { supabase } from '../utils/supabaseClient.js';
 import { contentModeration } from '../utils/contentModeration.js';
-import dotenv from 'dotenv';
+import {
+  AGE_FILTERS,
+  MESSAGE_MAX_LENGTH,
+  applyChatCookie,
+  isUuid,
+  publicConversation,
+  resolveChatOwner,
+  sanitizeConversationUpdates
+} from '../utils/chatAccess.js';
 
-dotenv.config();
+let chatDb = supabase;
+let anthropicClient = null;
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+export function setChatDbForTests(db) {
+  if (process.env.NODE_ENV !== 'test') {
+    throw new Error('Refusing to replace the chat database outside tests');
+  }
+  chatDb = db;
+}
 
-// Generate session ID from request (IP-based for now)
-const getSessionId = (req) => {
-  // Use IP address + user agent as session identifier
-  const ip = req.ip || req.connection.remoteAddress;
-  const userAgent = req.headers['user-agent'] || '';
-  return `session_${Buffer.from(ip + userAgent).toString('base64').slice(0, 32)}`;
-};
+function getAnthropic() {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    const error = new Error('ANTHROPIC_API_KEY is not set');
+    error.status = 503;
+    throw error;
+  }
+  if (!anthropicClient) {
+    anthropicClient = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+  }
+  return anthropicClient;
+}
 
-// CREATE new conversation
+function bindOwner(req, res) {
+  const owner = resolveChatOwner(req);
+  if (owner.error) {
+    res.status(owner.status).json({ error: owner.error });
+    return null;
+  }
+  applyChatCookie(res, owner.setCookie);
+  return owner.ownerId;
+}
+
+function publicError(res, status, error) {
+  res.status(status).json({ error });
+}
+
+async function findOwnedConversation(ownerId, id) {
+  const { data, error } = await chatDb
+    .from('chat_conversations')
+    .select('id, session_id, title, folder, is_pinned, created_at, updated_at, last_message_at')
+    .eq('id', id)
+    .eq('session_id', ownerId)
+    .limit(1);
+
+  if (error) throw error;
+  return data?.[0] || null;
+}
+
 export const createConversation = async (req, res) => {
   try {
-    console.log('📝 Creating new conversation...');
-    const sessionId = getSessionId(req);
-    console.log(`   Session ID: ${sessionId}`);
-    const { title = 'New Chat', folder = 'general' } = req.body;
-    console.log(`   Title: ${title}, Folder: ${folder}`);
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
 
-    const { data, error } = await supabase
+    const requestedTitle = typeof req.body?.title === 'string' ? req.body.title : 'New Chat';
+    const requestedFolder = typeof req.body?.folder === 'string' ? req.body.folder : 'general';
+    const sanitized = sanitizeConversationUpdates({
+      title: requestedTitle,
+      folder: requestedFolder
+    });
+    if (sanitized.error) {
+      return publicError(res, 400, sanitized.error);
+    }
+
+    const { data, error } = await chatDb
       .from('chat_conversations')
       .insert([
         {
-          session_id: sessionId,
-          title,
-          folder,
+          session_id: ownerId,
+          title: sanitized.updates.title,
+          folder: sanitized.updates.folder,
           is_pinned: false
         }
       ])
-      .select()
-      .single();
+      .select();
 
-    if (error) {
-      console.error('❌ Supabase error:', error);
-      throw error;
-    }
+    if (error) throw error;
+    const created = data?.[0];
+    if (!created) throw new Error('Insert returned no conversation');
 
-    console.log('✅ Conversation created:', data.id);
-    res.status(201).json(data);
+    res.status(201).json(publicConversation(created));
   } catch (error) {
-    console.error('💥 Error creating conversation:', error.message);
-    console.error('   Details:', error);
-    res.status(500).json({ error: 'Failed to create conversation', details: error.message });
+    console.error('Error creating conversation:', error);
+    publicError(res, 500, 'Failed to create conversation');
   }
 };
 
-// GET all conversations for session
 export const getConversations = async (req, res) => {
   try {
-    console.log('📋 Fetching conversations...');
-    const sessionId = getSessionId(req);
-    console.log(`   Session ID: ${sessionId}`);
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
 
-    const { data, error } = await supabase
+    const { data, error } = await chatDb
       .from('chat_conversations')
       .select('*')
-      .eq('session_id', sessionId)
+      .eq('session_id', ownerId)
       .order('updated_at', { ascending: false });
 
-    if (error) {
-      console.error('❌ Supabase error:', error);
-      throw error;
-    }
-
-    console.log(`✅ Found ${data?.length || 0} conversations`);
-    res.json(data || []);
+    if (error) throw error;
+    res.json((data || []).map(publicConversation));
   } catch (error) {
-    console.error('💥 Error fetching conversations:', error.message);
-    console.error('   Details:', error);
-    res.status(500).json({ error: 'Failed to fetch conversations', details: error.message });
+    console.error('Error fetching conversations:', error);
+    publicError(res, 500, 'Failed to fetch conversations');
   }
 };
 
-// GET messages for a conversation
 export const getMessages = async (req, res) => {
   try {
-    const { id } = req.params;
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
+    if (!isUuid(req.params.id)) return publicError(res, 400, 'Invalid conversation id');
 
-    const { data, error } = await supabase
+    const conversation = await findOwnedConversation(ownerId, req.params.id);
+    if (!conversation) return publicError(res, 404, 'Conversation not found');
+
+    const { data, error } = await chatDb
       .from('chat_messages')
       .select('*')
-      .eq('conversation_id', id)
+      .eq('conversation_id', conversation.id)
       .order('created_at', { ascending: true });
 
     if (error) throw error;
-
     res.json(data || []);
   } catch (error) {
     console.error('Error fetching messages:', error);
-    res.status(500).json({ error: 'Failed to fetch messages' });
+    publicError(res, 500, 'Failed to fetch messages');
   }
 };
 
-// SEND message with SSE streaming
 export const sendMessage = async (req, res) => {
   try {
-    const { id: conversationId } = req.params;
-    const {
-      content,
-      ageFilter = 'teen',
-      isRegeneration = false,
-      previousResponseId = null
-    } = req.body;
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
 
-    if (!content || !content.trim()) {
-      return res.status(400).json({ error: 'Message content is required' });
-    }
+    const conversationId = req.params.id;
+    if (!isUuid(conversationId)) return publicError(res, 400, 'Invalid conversation id');
 
-    // Content moderation check
+    const conversation = await findOwnedConversation(ownerId, conversationId);
+    if (!conversation) return publicError(res, 404, 'Conversation not found');
+
+    const content = typeof req.body?.content === 'string' ? req.body.content.trim() : '';
+    if (!content) return publicError(res, 400, 'Message content is required');
+    if (content.length > MESSAGE_MAX_LENGTH) return publicError(res, 400, 'Message is too long');
+
+    const ageFilter = AGE_FILTERS.has(req.body?.ageFilter) ? req.body.ageFilter : 'teen';
+    const isRegeneration = req.body?.isRegeneration === true;
+
     const moderationResult = contentModeration.shouldBlock(content, ageFilter);
     if (moderationResult.blocked) {
       return res.status(400).json({
@@ -125,65 +166,57 @@ export const sendMessage = async (req, res) => {
       });
     }
 
-    // Check for flagged content
     const flags = contentModeration.checkFlagged(content);
 
-    // Save user message
-    const { data: userMessage, error: userMsgError } = await supabase
+    const { data: userRows, error: userMsgError } = await chatDb
       .from('chat_messages')
       .insert([
         {
-          conversation_id: conversationId,
+          conversation_id: conversation.id,
           role: 'user',
-          content: content.trim(),
+          content,
           was_flagged: flags.length > 0,
           moderation_reason: flags.join(', ') || null
         }
       ])
-      .select()
-      .single();
+      .select();
 
     if (userMsgError) throw userMsgError;
+    if (!userRows?.[0]) throw new Error('Insert returned no user message');
 
-    // Get conversation history (last 20 messages)
-    const { data: history, error: historyError } = await supabase
+    const { data: history, error: historyError } = await chatDb
       .from('chat_messages')
       .select('role, content')
-      .eq('conversation_id', conversationId)
+      .eq('conversation_id', conversation.id)
       .order('created_at', { ascending: false })
       .limit(20);
 
     if (historyError) throw historyError;
 
-    // Prepare messages for Claude (reverse to chronological order)
-    const messages = history.reverse().map(msg => ({
+    const messages = (history || []).reverse().map((msg) => ({
       role: msg.role,
       content: msg.content
     }));
 
-    // Prepare system prompt with regeneration context if needed
     let systemPrompt = contentModeration.getSystemPrompt(ageFilter);
     if (isRegeneration) {
       systemPrompt += '\n\nNote: The user was not satisfied with the previous response and requested a regeneration. Please provide a different, improved answer with a fresh perspective and approach.';
     }
 
-    // Setup SSE
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
 
-    // Stream response from Claude
     let fullResponse = '';
     let tokenCount = 0;
 
-    const stream = await anthropic.messages.stream({
+    const stream = await getAnthropic().messages.stream({
       model: process.env.ANTHROPIC_MODEL || 'claude-sonnet-4-5-20250929',
       max_tokens: 4096,
       system: systemPrompt,
-      messages: messages
+      messages
     });
 
-    // Handle streaming
     stream.on('text', (text) => {
       fullResponse += text;
       res.write(`data: ${JSON.stringify({ type: 'content', text })}\n\n`);
@@ -194,36 +227,34 @@ export const sendMessage = async (req, res) => {
     });
 
     stream.on('end', async () => {
-      // Save assistant message
-      const { data: assistantMessage, error: assistantMsgError } = await supabase
+      const { data: assistantRows, error: assistantMsgError } = await chatDb
         .from('chat_messages')
         .insert([
           {
-            conversation_id: conversationId,
+            conversation_id: conversation.id,
             role: 'assistant',
             content: fullResponse,
             tokens_used: tokenCount
           }
         ])
-        .select()
-        .single();
+        .select();
 
       if (assistantMsgError) {
         console.error('Error saving assistant message:', assistantMsgError);
       }
 
-      // Update conversation title if it's the first exchange
       if (messages.length <= 2) {
         const title = content.slice(0, 50) + (content.length > 50 ? '...' : '');
-        await supabase
+        await chatDb
           .from('chat_conversations')
           .update({ title })
-          .eq('id', conversationId);
+          .eq('id', conversation.id)
+          .eq('session_id', ownerId);
       }
 
       res.write(`data: ${JSON.stringify({
         type: 'done',
-        messageId: assistantMessage?.id,
+        messageId: assistantRows?.[0]?.id,
         tokens: tokenCount
       })}\n\n`);
       res.end();
@@ -234,78 +265,85 @@ export const sendMessage = async (req, res) => {
       res.write(`data: ${JSON.stringify({ type: 'error', message: 'Streaming failed' })}\n\n`);
       res.end();
     });
-
   } catch (error) {
     console.error('Error sending message:', error);
     if (!res.headersSent) {
-      res.status(500).json({ error: 'Failed to send message' });
+      const status = error.status === 503 ? 503 : 500;
+      publicError(res, status, status === 503 ? 'Chat is not configured' : 'Failed to send message');
     }
   }
 };
 
-// UPDATE conversation (title, folder, pin status)
 export const updateConversation = async (req, res) => {
   try {
-    const { id } = req.params;
-    const updates = req.body;
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
+    if (!isUuid(req.params.id)) return publicError(res, 400, 'Invalid conversation id');
 
-    const { data, error } = await supabase
+    const sanitized = sanitizeConversationUpdates(req.body);
+    if (sanitized.error) return publicError(res, 400, sanitized.error);
+
+    const { data, error } = await chatDb
       .from('chat_conversations')
-      .update(updates)
-      .eq('id', id)
-      .select()
-      .single();
+      .update(sanitized.updates)
+      .eq('id', req.params.id)
+      .eq('session_id', ownerId)
+      .select('id, session_id, title, folder, is_pinned, created_at, updated_at, last_message_at');
 
     if (error) throw error;
+    const updated = data?.[0];
+    if (!updated) return publicError(res, 404, 'Conversation not found');
 
-    res.json(data);
+    res.json(publicConversation(updated));
   } catch (error) {
     console.error('Error updating conversation:', error);
-    res.status(500).json({ error: 'Failed to update conversation' });
+    publicError(res, 500, 'Failed to update conversation');
   }
 };
 
-// DELETE conversation
 export const deleteConversation = async (req, res) => {
   try {
-    const { id } = req.params;
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
+    if (!isUuid(req.params.id)) return publicError(res, 400, 'Invalid conversation id');
 
-    const { error } = await supabase
+    const { data, error } = await chatDb
       .from('chat_conversations')
       .delete()
-      .eq('id', id);
+      .eq('id', req.params.id)
+      .eq('session_id', ownerId)
+      .select('id');
 
     if (error) throw error;
+    if (!data || data.length === 0) return publicError(res, 404, 'Conversation not found');
 
     res.json({ message: 'Conversation deleted successfully' });
   } catch (error) {
     console.error('Error deleting conversation:', error);
-    res.status(500).json({ error: 'Failed to delete conversation' });
+    publicError(res, 500, 'Failed to delete conversation');
   }
 };
 
-// SEARCH messages
 export const searchMessages = async (req, res) => {
   try {
-    const sessionId = getSessionId(req);
-    const { query } = req.query;
+    const ownerId = bindOwner(req, res);
+    if (!ownerId) return;
 
-    if (!query) {
-      return res.status(400).json({ error: 'Search query is required' });
-    }
+    const query = typeof req.query.query === 'string' ? req.query.query.trim() : '';
+    if (!query) return publicError(res, 400, 'Search query is required');
+    if (query.length > 200) return publicError(res, 400, 'Search query is too long');
 
-    // Get all conversations for this session
-    const { data: conversations, error: convError } = await supabase
+    const { data: conversations, error: convError } = await chatDb
       .from('chat_conversations')
       .select('id')
-      .eq('session_id', sessionId);
+      .eq('session_id', ownerId);
 
     if (convError) throw convError;
 
-    const conversationIds = conversations.map(c => c.id);
+    const conversationIds = (conversations || []).map((conversation) => conversation.id);
+    if (conversationIds.length === 0) return res.json([]);
 
-    // Search messages
-    const { data, error } = await supabase
+    const { data, error } = await chatDb
       .from('chat_messages')
       .select('*, conversation:chat_conversations(title)')
       .in('conversation_id', conversationIds)
@@ -314,10 +352,9 @@ export const searchMessages = async (req, res) => {
       .limit(50);
 
     if (error) throw error;
-
     res.json(data || []);
   } catch (error) {
     console.error('Error searching messages:', error);
-    res.status(500).json({ error: 'Failed to search messages' });
+    publicError(res, 500, 'Failed to search messages');
   }
 };

@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import axios from 'axios';
-import API_URL from '../utils/api';
+import API_URL, { chatClient, chatAuthHeaders } from '../utils/api';
 
 // Import components
 import ChatHeader from '../components/chat/ChatHeader';
@@ -31,6 +30,7 @@ export default function Chat() {
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const listRequest = useRef(0);
 
   // Voice input states
   const [isRecording, setIsRecording] = useState(false);
@@ -79,8 +79,10 @@ export default function Chat() {
   };
 
   const loadConversations = async () => {
+    const requestId = ++listRequest.current;
     try {
-      const response = await axios.get(`${API_URL}/chat/conversations`);
+      const response = await chatClient.get('/chat/conversations');
+      if (requestId !== listRequest.current) return;
       setConversations(response.data);
     } catch (error) {
       console.error('Error loading conversations:', error);
@@ -88,12 +90,13 @@ export default function Chat() {
   };
 
   const createNewConversation = async () => {
+    listRequest.current += 1;
     try {
-      const response = await axios.post(`${API_URL}/chat/conversations`, {
+      const response = await chatClient.post('/chat/conversations', {
         title: 'New Chat'
       });
       const newConv = response.data;
-      setConversations(prev => [newConv, ...prev]);
+      setConversations(prev => [newConv, ...prev.filter((conversation) => conversation.id !== newConv.id)]);
       setCurrentConversation(newConv);
       setMessages([]);
       return newConv;
@@ -105,7 +108,7 @@ export default function Chat() {
 
   const loadMessages = async (conversationId) => {
     try {
-      const response = await axios.get(`${API_URL}/chat/conversations/${conversationId}`);
+      const response = await chatClient.get(`/chat/conversations/${conversationId}`);
       setMessages(response.data);
     } catch (error) {
       console.error('Error loading messages:', error);
@@ -153,9 +156,10 @@ export default function Chat() {
         `${API_URL}/chat/conversations/${conversation.id}/messages`,
         {
           method: 'POST',
-          headers: {
+          credentials: 'include',
+          headers: chatAuthHeaders({
             'Content-Type': 'application/json'
-          },
+          }),
           body: JSON.stringify(requestBody)
         }
       );
@@ -289,9 +293,10 @@ export default function Chat() {
         `${API_URL}/chat/conversations/${currentConversation.id}/messages`,
         {
           method: 'POST',
-          headers: {
+          credentials: 'include',
+          headers: chatAuthHeaders({
             'Content-Type': 'application/json'
-          },
+          }),
           body: JSON.stringify({
             content: lastUserMessage.content,
             ageFilter,
@@ -349,7 +354,7 @@ export default function Chat() {
   const deleteConversation = async (convId) => {
     if (!confirm('Delete this conversation?')) return;
     try {
-      await axios.delete(`${API_URL}/chat/conversations/${convId}`);
+      await chatClient.delete(`/chat/conversations/${convId}`);
       setConversations(prev => prev.filter(c => c.id !== convId));
       if (currentConversation?.id === convId) {
         setCurrentConversation(null);
