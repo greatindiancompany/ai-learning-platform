@@ -1,6 +1,15 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+function defaultApiUrl() {
+  if (import.meta.env.VITE_API_URL) return import.meta.env.VITE_API_URL;
+  // The chat cookie is SameSite=Lax, so the API host must match the page host.
+  if (typeof window !== 'undefined' && window.location.hostname) {
+    return `${window.location.protocol}//${window.location.hostname}:3000/api`;
+  }
+  return 'http://localhost:3000/api';
+}
+
+const API_URL = defaultApiUrl();
 
 export function chatAuthHeaders(extra = {}) {
   const headers = { ...extra };

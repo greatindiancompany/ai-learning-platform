@@ -30,6 +30,7 @@ export default function Chat() {
 
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const listRequest = useRef(0);
 
   // Voice input states
   const [isRecording, setIsRecording] = useState(false);
@@ -78,8 +79,10 @@ export default function Chat() {
   };
 
   const loadConversations = async () => {
+    const requestId = ++listRequest.current;
     try {
       const response = await chatClient.get('/chat/conversations');
+      if (requestId !== listRequest.current) return;
       setConversations(response.data);
     } catch (error) {
       console.error('Error loading conversations:', error);
@@ -87,12 +90,13 @@ export default function Chat() {
   };
 
   const createNewConversation = async () => {
+    listRequest.current += 1;
     try {
       const response = await chatClient.post('/chat/conversations', {
         title: 'New Chat'
       });
       const newConv = response.data;
-      setConversations(prev => [newConv, ...prev]);
+      setConversations(prev => [newConv, ...prev.filter((conversation) => conversation.id !== newConv.id)]);
       setCurrentConversation(newConv);
       setMessages([]);
       return newConv;
