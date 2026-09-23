@@ -4,15 +4,22 @@
 
 const https = require('https');
 
-const SUPABASE_URL = 'https://ksdnbkxixbywurohugkx.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  console.error('Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY before running this script.');
+  process.exit(1);
+}
+
+const SUPABASE_HOST = new URL(SUPABASE_URL).hostname;
 
 async function updateSupabase(table, id, data) {
   return new Promise((resolve, reject) => {
     const body = JSON.stringify(data);
     const options = {
       method: 'PATCH',
-      hostname: 'ksdnbkxixbywurohugkx.supabase.co',
+      hostname: SUPABASE_HOST,
       path: `/rest/v1/${table}?id=eq.${id}`,
       headers: {
         'apikey': SUPABASE_KEY,
@@ -43,7 +50,7 @@ async function updateSupabase(table, id, data) {
 async function fetchSupabase(table, query = '') {
   return new Promise((resolve, reject) => {
     const options = {
-      hostname: 'ksdnbkxixbywurohugkx.supabase.co',
+      hostname: SUPABASE_HOST,
       path: `/rest/v1/${table}?${query}`,
       headers: {
         'apikey': SUPABASE_KEY,

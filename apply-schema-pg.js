@@ -1,22 +1,21 @@
 import pg from 'pg';
 import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const { Client } = pg;
 
-// Supabase connection details
-// Format: postgresql://postgres:[PASSWORD]@db.[PROJECT_REF].supabase.co:5432/postgres
-const PROJECT_REF = 'ksdnbkxixbywurohugkx';
+const databaseUrl = process.env.DATABASE_URL;
 
-// Try different connection approaches
-const connectionStrings = [
-  // Try with service role key as password (sometimes works)
-  `postgresql://postgres:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY@db.${PROJECT_REF}.supabase.co:5432/postgres`,
-  // Try pooler connection
-  `postgresql://postgres:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtzZG5ia3hpeGJ5d3Vyb2h1Z2t4Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NjE0NDQ5NywiZXhwIjoyMDgxNzIwNDk3fQ.wPsceDO3tTGXacwBipTYIMsmBD2W4ZHXjjDZk_pQ5NY@aws-0-eu-west-2.pooler.supabase.com:5432/postgres`
-];
+if (!databaseUrl) {
+  console.error('Set DATABASE_URL before running this script.');
+  process.exit(1);
+}
+
+const connectionStrings = [databaseUrl];
 
 async function tryConnection(connectionString, index) {
-  const client = new Client({ connectionString, ssl: { rejectUnauthorized: false } });
+  const client = new Client({ connectionString, ssl: { rejectUnauthorized: true } });
 
   try {
     console.log(`\n🔌 Trying connection method ${index + 1}...`);
@@ -24,7 +23,7 @@ async function tryConnection(connectionString, index) {
     console.log('✅ Connected successfully!');
 
     // Read SQL schema
-    const sqlSchema = fs.readFileSync('/root/inspir/auth-schema.sql', 'utf8');
+    const sqlSchema = fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), 'auth-schema.sql'), 'utf8');
     console.log(`📖 Loaded SQL schema (${sqlSchema.length} characters)`);
 
     // Execute the schema
