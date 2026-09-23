@@ -45,3 +45,10 @@ Security fixes target the current default branch unless maintainers announce a s
 - Review CORS changes carefully.
 - Check upload handling for file type, size, and parsing risk.
 - Do not run seed or migration scripts against production without a backup and rollback plan.
+- Chat reads and writes are scoped to the signed-in account, or to an HttpOnly cookie for anonymous study sessions. Conversation ids are not enough.
+- Browser origins come from `CORS_ORIGIN`. Production startup refuses a placeholder `JWT_SECRET`.
+- `database/migrations/20260923_tighten_chat_rls.sql` removes public chat policies. The founder applies it in Supabase. The service role still bypasses RLS.
+
+## Founder rotation
+
+The historical Supabase project `ksdnbkxixbywurohugkx` had a service-role key in git history. Regenerating that key in the Supabase dashboard is still required. Put the new value only in the environment. Do not paste it into the repo, a pull request, or a chat. If the database password was ever set to that key, rotate the database password too.

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { getToken } from '../../utils/auth';
+import API_URL, { chatAuthHeaders } from '../../utils/api';
 
 export default function ExplainConceptTool() {
   const [concept, setConcept] = useState('');
@@ -15,16 +15,12 @@ export default function ExplainConceptTool() {
     setExplanation('');
 
     try {
-      const token = getToken();
-      const headers = {
+      const headers = chatAuthHeaders({
         'Content-Type': 'application/json'
-      };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      });
 
       // First, create a conversation
-      const convResponse = await fetch(`${import.meta.env.VITE_API_URL}/chat/conversations`, {
+      const convResponse = await fetch(`${API_URL}/chat/conversations`, {
         method: 'POST',
         headers,
         credentials: 'include'
@@ -35,10 +31,10 @@ export default function ExplainConceptTool() {
       }
 
       const convData = await convResponse.json();
-      const conversationId = convData.conversation.id;
+      const conversationId = convData.id;
 
       // Then send the message with SSE streaming
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/chat/conversations/${conversationId}/messages`, {
+      const response = await fetch(`${API_URL}/chat/conversations/${conversationId}/messages`, {
         method: 'POST',
         headers,
         credentials: 'include',

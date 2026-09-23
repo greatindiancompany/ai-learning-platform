@@ -72,7 +72,7 @@ router.post('/create', authenticateStudent, async (req, res) => {
     console.error('Error creating session:', error);
     res.status(500).json({
       error: 'Failed to create session',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -134,7 +134,7 @@ router.post('/end', authenticateStudent, async (req, res) => {
     console.error('Error ending session:', error);
     res.status(500).json({
       error: 'Failed to end session',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -168,7 +168,7 @@ router.patch('/activity', authenticateStudent, async (req, res) => {
     console.error('Error updating session activity:', error);
     res.status(500).json({
       error: 'Failed to update activity',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });
@@ -216,7 +216,7 @@ router.post('/tool-used', authenticateStudent, async (req, res) => {
     console.error('Error tracking tool usage:', error);
     res.status(500).json({
       error: 'Failed to track tool usage',
-      message: error.message
+      message: 'Request failed'
     });
   }
 });

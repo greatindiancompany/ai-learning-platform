@@ -10,8 +10,21 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://inspir.uk';
+
+let stripeClient = null;
+
+function getStripe() {
+  if (!process.env.STRIPE_SECRET_KEY) {
+    const error = new Error('STRIPE_SECRET_KEY is not set');
+    error.status = 503;
+    throw error;
+  }
+  if (!stripeClient) {
+    stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY);
+  }
+  return stripeClient;
+}
 
 // ============================================================================
 // CHECKOUT SESSION
@@ -45,7 +58,7 @@ export const createCheckoutSession = async (req, res) => {
         let customerId = parent.stripe_customer_id;
 
         if (!customerId) {
-            const customer = await stripe.customers.create({
+            const customer = await getStripe().customers.create({
                 email: parent.email,
                 metadata: {
                     parent_id: parent.id,
@@ -71,7 +84,7 @@ export const createCheckoutSession = async (req, res) => {
         // Create checkout session
         // Note: You need to create a price in Stripe dashboard first
         // For now, we'll use a placeholder price_id
-        const session = await stripe.checkout.sessions.create({
+        const session = await getStripe().checkout.sessions.create({
             customer: customerId,
             mode: 'subscription',
             payment_method_types: ['card'],
@@ -133,7 +146,7 @@ export const createPortalSession = async (req, res) => {
         }
 
         // Create portal session
-        const session = await stripe.billingPortal.sessions.create({
+        const session = await getStripe().billingPortal.sessions.create({
             customer: parent.stripe_customer_id,
             return_url: `${FRONTEND_URL}/dashboard`,
         });
@@ -168,7 +181,7 @@ export const handleWebhook = async (req, res) => {
 
     try {
         // Verify webhook signature
-        event = stripe.webhooks.constructEvent(req.body, sig, webhookSecret);
+        event = getStripe().webhooks.constructEvent(req.body, sig, webhookSecret);
     } catch (err) {
         console.error('Webhook signature verification failed:', err.message);
         return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -374,7 +387,7 @@ export const getSubscriptionInfo = async (req, res) => {
         let subscriptionDetails = null;
         if (parent.stripe_subscription_id) {
             try {
-                const subscription = await stripe.subscriptions.retrieve(parent.stripe_subscription_id);
+                const subscription = await getStripe().subscriptions.retrieve(parent.stripe_subscription_id);
                 subscriptionDetails = {
                     status: subscription.status,
                     current_period_end: new Date(subscription.current_period_end * 1000),

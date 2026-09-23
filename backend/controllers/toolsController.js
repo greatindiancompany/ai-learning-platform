@@ -23,7 +23,7 @@ export const getSketches = async (req, res) => {
     res.json({ success: true, sketches: data });
   } catch (error) {
     console.error('Error fetching sketches:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -42,7 +42,7 @@ export const createSketch = async (req, res) => {
     res.json({ success: true, sketch: data });
   } catch (error) {
     console.error('Error creating sketch:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -64,7 +64,7 @@ export const updateSketch = async (req, res) => {
     res.json({ success: true, sketch: data });
   } catch (error) {
     console.error('Error updating sketch:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -83,7 +83,7 @@ export const deleteSketch = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting sketch:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -155,7 +155,7 @@ No additional text, just the JSON array.`;
     res.json({ success: true, quiz: data });
   } catch (error) {
     console.error('Error generating quiz:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -173,7 +173,7 @@ export const getQuizzes = async (req, res) => {
     res.json({ success: true, quizzes: data });
   } catch (error) {
     console.error('Error fetching quizzes:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -192,7 +192,7 @@ export const submitQuizAttempt = async (req, res) => {
     res.json({ success: true, attempt: data });
   } catch (error) {
     console.error('Error submitting quiz attempt:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -217,7 +217,7 @@ export const getFlashcardDecks = async (req, res) => {
     res.json({ success: true, decks: data });
   } catch (error) {
     console.error('Error fetching flashcard decks:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -236,7 +236,7 @@ export const createFlashcardDeck = async (req, res) => {
     res.json({ success: true, deck: data });
   } catch (error) {
     console.error('Error creating flashcard deck:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -254,7 +254,7 @@ export const getFlashcards = async (req, res) => {
     res.json({ success: true, cards: data });
   } catch (error) {
     console.error('Error fetching flashcards:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -272,7 +272,7 @@ export const createFlashcard = async (req, res) => {
     res.json({ success: true, card: data });
   } catch (error) {
     console.error('Error creating flashcard:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -292,7 +292,7 @@ export const updateFlashcardMastery = async (req, res) => {
     res.json({ success: true, card: data });
   } catch (error) {
     console.error('Error updating flashcard mastery:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -314,7 +314,7 @@ export const getPracticeTests = async (req, res) => {
     res.json({ success: true, tests: data });
   } catch (error) {
     console.error('Error fetching practice tests:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -333,7 +333,7 @@ export const createPracticeTest = async (req, res) => {
     res.json({ success: true, test: data });
   } catch (error) {
     console.error('Error creating practice test:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -352,7 +352,7 @@ export const submitTestAttempt = async (req, res) => {
     res.json({ success: true, attempt: data });
   } catch (error) {
     console.error('Error submitting test attempt:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -387,7 +387,7 @@ export const getStudySessions = async (req, res) => {
     res.json({ success: true, sessions: data });
   } catch (error) {
     console.error('Error fetching study sessions:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -406,7 +406,7 @@ export const startStudySession = async (req, res) => {
     res.json({ success: true, session: data });
   } catch (error) {
     console.error('Error starting study session:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -427,7 +427,7 @@ export const completeStudySession = async (req, res) => {
     res.json({ success: true, session: data });
   } catch (error) {
     console.error('Error completing study session:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -452,7 +452,7 @@ export const getHabits = async (req, res) => {
     res.json({ success: true, habits: data });
   } catch (error) {
     console.error('Error fetching habits:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -471,7 +471,7 @@ export const createHabit = async (req, res) => {
     res.json({ success: true, habit: data });
   } catch (error) {
     console.error('Error creating habit:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -489,7 +489,7 @@ export const completeHabit = async (req, res) => {
     res.json({ success: true, completion: data });
   } catch (error) {
     console.error('Error completing habit:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -511,7 +511,7 @@ export const getMusicPlaylists = async (req, res) => {
     res.json({ success: true, playlists: data });
   } catch (error) {
     console.error('Error fetching music playlists:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -530,7 +530,7 @@ export const createMusicPlaylist = async (req, res) => {
     res.json({ success: true, playlist: data });
   } catch (error) {
     console.error('Error creating music playlist:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -549,7 +549,7 @@ export const logMusicPlay = async (req, res) => {
     res.json({ success: true, history: data });
   } catch (error) {
     console.error('Error logging music play:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -604,7 +604,7 @@ Be helpful and educational.`
     res.json({ success: true, analysis: data });
   } catch (error) {
     console.error('Error analyzing image:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -622,7 +622,7 @@ export const getImageAnalyses = async (req, res) => {
     res.json({ success: true, analyses: data });
   } catch (error) {
     console.error('Error fetching image analyses:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -703,7 +703,7 @@ Only return the JSON object, no additional text.`;
     res.json({ success: true, mathProblem: data });
   } catch (error) {
     console.error('Error solving math problem:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -722,7 +722,7 @@ export const getMathProblems = async (req, res) => {
     res.json({ success: true, problems: data });
   } catch (error) {
     console.error('Error fetching math problems:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -744,7 +744,7 @@ export const getExperiments = async (req, res) => {
     res.json({ success: true, experiments: data });
   } catch (error) {
     console.error('Error fetching experiments:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -763,7 +763,7 @@ export const createExperiment = async (req, res) => {
     res.json({ success: true, experiment });
   } catch (error) {
     console.error('Error creating experiment:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -785,7 +785,7 @@ export const getVisualLearning = async (req, res) => {
     res.json({ success: true, visuals: data });
   } catch (error) {
     console.error('Error fetching visual learning:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -804,7 +804,7 @@ export const createVisualLearning = async (req, res) => {
     res.json({ success: true, visual: data });
   } catch (error) {
     console.error('Error creating visual learning:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -826,7 +826,7 @@ export const updateVisualLearning = async (req, res) => {
     res.json({ success: true, visual: data });
   } catch (error) {
     console.error('Error updating visual learning:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -854,7 +854,7 @@ export const getNotes = async (req, res) => {
     res.json({ success: true, notes: data });
   } catch (error) {
     console.error('Error fetching notes:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -873,7 +873,7 @@ export const createNote = async (req, res) => {
     res.json({ success: true, note: data });
   } catch (error) {
     console.error('Error creating note:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -895,7 +895,7 @@ export const updateNote = async (req, res) => {
     res.json({ success: true, note: data });
   } catch (error) {
     console.error('Error updating note:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -914,7 +914,7 @@ export const deleteNote = async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.error('Error deleting note:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -939,7 +939,7 @@ export const getStudyPlans = async (req, res) => {
     res.json({ success: true, plans: data });
   } catch (error) {
     console.error('Error fetching study plans:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -958,7 +958,7 @@ export const createStudyPlan = async (req, res) => {
     res.json({ success: true, plan: data });
   } catch (error) {
     console.error('Error creating study plan:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -982,7 +982,7 @@ export const getStudyTasks = async (req, res) => {
     res.json({ success: true, tasks: data });
   } catch (error) {
     console.error('Error fetching study tasks:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1001,7 +1001,7 @@ export const createStudyTask = async (req, res) => {
     res.json({ success: true, task: data });
   } catch (error) {
     console.error('Error creating study task:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1022,7 +1022,7 @@ export const completeStudyTask = async (req, res) => {
     res.json({ success: true, task: data });
   } catch (error) {
     console.error('Error completing study task:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1047,7 +1047,7 @@ export const getGoals = async (req, res) => {
     res.json({ success: true, goals: data });
   } catch (error) {
     console.error('Error fetching goals:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1066,7 +1066,7 @@ export const createGoal = async (req, res) => {
     res.json({ success: true, goal: data });
   } catch (error) {
     console.error('Error creating goal:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1088,7 +1088,7 @@ export const updateGoalProgress = async (req, res) => {
     res.json({ success: true, goal: data });
   } catch (error) {
     console.error('Error updating goal progress:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1106,7 +1106,7 @@ export const createGoalMilestone = async (req, res) => {
     res.json({ success: true, milestone: data });
   } catch (error) {
     console.error('Error creating goal milestone:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
 
@@ -1125,6 +1125,6 @@ export const completeMilestone = async (req, res) => {
     res.json({ success: true, milestone: data });
   } catch (error) {
     console.error('Error completing milestone:', error);
-    res.status(500).json({ success: false, error: error.message });
+    res.status(500).json({ success: false, error: 'Request failed' });
   }
 };
